@@ -15,6 +15,7 @@ export class AuthFormComponent {
   user = { username: '', password: '' };
   isLoginMode = true;
   errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -38,7 +39,7 @@ export class AuthFormComponent {
       this.authService.signup(this.user).subscribe(
         () => {
           this.isLoginMode = true; // Switch to login mode after successful signup
-          this.errorMessage = 'Signup successful! Please log in.';
+          this.successMessage = 'Signup successful! Please log in.';
         },
         (error) => {
           console.error('Signup failed:', error);

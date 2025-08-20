@@ -12,6 +12,8 @@
     <button type="submit">{{ isLoginMode ? 'Login' : 'Sign Up' }}</button>
   </form>
   <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+
   <p>
     <a (click)="onSwitchMode()">
       {{ isLoginMode ? 'Need an account? Sign Up' : 'Already have an account? Login' }}
