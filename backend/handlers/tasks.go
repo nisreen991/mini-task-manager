@@ -47,6 +47,43 @@ func GetTasks(client *mongo.Client) http.HandlerFunc {
 	}
 }
 
+// GetTaskById retrieves tasks for a given id for authenticated user
+func GetTaskById(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		username := r.Context().Value("username").(string)
+
+		var user models.User
+		userCollection := client.Database("taskmanager").Collection("users")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusUnauthorized)
+			return
+		}
+		idParam := r.URL.Path[len("/tasks/get-task/"):]
+		id, err := primitive.ObjectIDFromHex(idParam)
+		if err != nil {
+			http.Error(w, "Invalid task ID", http.StatusBadRequest)
+			return
+		}
+		// oid, err := primitive.ObjectIDFromHex(taskID)
+		// if err != nil {
+		// 	http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		// 	return
+		// }
+		taskCollection := client.Database("taskmanager").Collection("tasks")
+		var task models.Task
+		if err := taskCollection.FindOne(ctx, bson.M{"_id": id, "userId": user.ID}).Decode(&task); err != nil {
+			http.Error(w, "Task not found", http.StatusNotFound)
+			return
+		}
+		// Return task as JSON
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(task)
+	}
+}
+
 // CreateTask handles the creation of new tasks.
 func CreateTask(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
