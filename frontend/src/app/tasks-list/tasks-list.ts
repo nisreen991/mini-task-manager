@@ -27,9 +27,13 @@ export class TasksListComponent implements OnInit {
   }
 
   fetchTasks(): void {
-    this.taskService.getTasks().subscribe(
+    this.taskService.getTasks().subscribe(      
       (tasks: Task[]) => {
-        this.tasks = tasks;
+        if (tasks.length) {          
+          this.tasks = tasks;
+        } else {
+          this.tasks = [];
+        }
       },
       (error: any) => {
         console.error('Error fetching tasks:', error);
