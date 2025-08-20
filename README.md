@@ -72,3 +72,32 @@ This project utilizes the following technologies:
 *   **Testing:** Comprehensive unit and integration tests were not prioritized due to time constraints. For a production application, a full testing suite would be essential.
 *   **Scalability:** The current setup is suitable for a mini-task manager. For a larger-scale application, considerations like load balancing, database sharding, and more advanced authentication mechanisms would be necessary.
 *   **Security:** Basic JWT authentication is implemented. However, more advanced security measures like refresh tokens, secure cookie handling, and protection against common web vulnerabilities (e.g., XSS, CSRF) could be added.
+
+## Environment Variables (.env.example)
+
+This project currently has its configurations (like API URLs and database connection strings) hardcoded within the source code for simplicity. For a production environment, it is highly recommended to manage these configurations using environment variables.
+
+Below are examples of what `.env` files *would* look like for both the backend and frontend if environment variables were used. You would typically create a `.env` file in the respective `backend` and `frontend` directories based on these examples, and modify your application code to read from these variables.
+
+### Backend (`backend/.env.example`)
+
+```
+# MongoDB Connection URI
+MONGODB_URI=mongodb://localhost:27017
+
+# Server Port
+PORT=8080
+
+# JWT Secret Key (for authentication)
+JWT_SECRET=your_secret_key_here
+```
+
+### Frontend (`frontend/.env.example`)
+
+```
+# Backend API URL for tasks
+ANGULAR_APP_API_URL_TASKS=http://localhost:8080/tasks
+
+# Backend API URL for authentication
+ANGULAR_APP_API_URL_AUTH=http://localhost:8080/auth
+```
