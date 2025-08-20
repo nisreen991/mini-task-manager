@@ -42,6 +42,8 @@ export class AuthFormComponent {
         () => {
           this.isLoginMode = true; // Switch to login mode after successful signup
           this.successMessage = 'Signup successful! Please log in.';
+          this.user.username = '';
+          this.user.password = '';
         },
         (error) => {
           console.error('Signup failed:', error);
