@@ -22,6 +22,8 @@ export class AuthFormComponent {
   onSwitchMode() {
     this.isLoginMode = !this.isLoginMode;
     this.errorMessage = null; // Clear error when switching modes
+    this.user.username = '';
+    this.user.password = ''
   }
 
   onSubmit() {
