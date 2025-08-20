@@ -47,7 +47,43 @@ func GetTasks(client *mongo.Client) http.HandlerFunc {
 	}
 }
 
-// TaskHandler handles create, update, and delete operations for tasks.
+// CreateTask handles the creation of new tasks.
+func CreateTask(client *mongo.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		username := r.Context().Value("username").(string)
+
+		var user models.User
+		userCollection := client.Database("taskmanager").Collection("users")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		err := userCollection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusInternalServerError)
+			return
+		}
+
+		taskCollection := client.Database("taskmanager").Collection("tasks")
+
+		var task models.Task
+		err = json.NewDecoder(r.Body).Decode(&task)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		task.UserID = user.ID
+
+		_, err = taskCollection.InsertOne(ctx, task)
+		if err != nil {
+			http.Error(w, "Failed to create task", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(map[string]string{"message": "Task created successfully"})
+	}
+}
+
+// TaskHandler handles update, and delete operations for tasks.
 func TaskHandler(client *mongo.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := r.Context().Value("username").(string)
@@ -66,24 +102,6 @@ func TaskHandler(client *mongo.Client) http.HandlerFunc {
 		taskCollection := client.Database("taskmanager").Collection("tasks")
 
 		switch r.Method {
-		case "POST":
-			var task models.Task
-			err := json.NewDecoder(r.Body).Decode(&task)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
-				return
-			}
-			task.UserID = user.ID // Associate task with the logged-in user
-
-			_, err = taskCollection.InsertOne(ctx, task)
-			if err != nil {
-				http.Error(w, "Failed to create task", http.StatusInternalServerError)
-				return
-			}
-
-			w.WriteHeader(http.StatusCreated)
-			json.NewEncoder(w).Encode(map[string]string{"message": "Task created successfully"})
-
 		case "PUT":
 			idParam := r.URL.Path[len("/tasks/"):]
 			id, err := primitive.ObjectIDFromHex(idParam)

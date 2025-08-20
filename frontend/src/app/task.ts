@@ -35,7 +35,7 @@ export class TaskService {
   }
 
   createTask(task: Task): Observable<any> {
-    return this.http.post(this.apiUrl, task, { headers: this.getAuthHeaders() });
+    return this.http.post(`${this.apiUrl}/create-task`, task, { headers: this.getAuthHeaders() });
   }
 
   updateTask(id: string, task: Task): Observable<any> {

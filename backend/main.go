@@ -50,6 +50,7 @@ func main() {
 	mux.HandleFunc("/auth/login", handlers.Login(client))
 
 	mux.Handle("/tasks", middleware.AuthMiddleware(http.HandlerFunc(handlers.GetTasks(client))))
+	mux.Handle("/tasks/create-task", middleware.AuthMiddleware(http.HandlerFunc(handlers.CreateTask(client))))
 	mux.Handle("/tasks/", middleware.AuthMiddleware(http.HandlerFunc(handlers.TaskHandler(client))))
 
 	// CORS setup
