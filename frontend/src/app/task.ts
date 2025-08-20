@@ -27,11 +27,11 @@ export class TaskService {
   }
 
   getTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.apiUrl, { headers: this.getAuthHeaders() });
+    return this.http.get<Task[]>(`${this.apiUrl}/get-all-tasks`, { headers: this.getAuthHeaders() });
   }
 
   getTask(id: string): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
+    return this.http.get<Task>(`${this.apiUrl}/get-task/${id}`, { headers: this.getAuthHeaders() });
   }
 
   createTask(task: Task): Observable<any> {
